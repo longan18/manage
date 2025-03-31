@@ -1,0 +1,62 @@
+version: "3.8"
+
+services:
+  # Frontend service
+  frontend:
+    build:
+      context: .
+      dockerfile: .docker/frontend.Dockerfile
+      target: ${FRONTEND_TARGET:-development}
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - NEXT_PUBLIC_API_URL=http://backend:8080
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  # Backend service
+  backend:
+    build:
+      context: .
+      dockerfile: .docker/backend.Dockerfile
+      target: ${BACKEND_TARGET:-development}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/app
+      - /app/go
+    environment:
+      - GO_ENV=${GO_ENV:-development}
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=${POSTGRES_USER:-postgres}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - DB_NAME=${POSTGRES_DB:-manage}
+      - JWT_SECRET=${JWT_SECRET:-your-secret-key}
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  # Database service
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./.docker/postgres/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./.docker/postgres/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-manage}
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local

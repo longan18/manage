@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  # Frontend production overrides
+  frontend:
+    build:
+      target: production
+    environment:
+      - NODE_ENV=production
+    # In production, don't mount source directories
+    volumes:
+      - /app/node_modules
+    restart: always
+
+  # Backend production overrides
+  backend:
+    build:
+      target: production
+    environment:
+      - GO_ENV=production
+      - DEBUG=false
+    # In production, don't mount source directories
+    volumes: []
+    restart: always
+
+  # Database production overrides
+  postgres:
+    # Expose Postgres only to the backend in production, not to the host
+    ports: []
+    # In production, use named volumes for persistence
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./.docker/postgres/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./.docker/postgres/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+    restart: always

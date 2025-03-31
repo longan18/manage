@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  # Frontend development overrides
+  frontend:
+    build:
+      target: development
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev
+
+  # Backend development overrides
+  backend:
+    build:
+      target: development
+    environment:
+      - GO_ENV=development
+      - DEBUG=true
+    volumes:
+      - ./backend:/app
+    # Use air for hot reloading in development
+    command: air -c .air.toml
+
+  # Database development overrides
+  postgres:
+    ports:
+      - "5432:5432"
+    # Enable Docker volume for persistence during development
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./.docker/postgres/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./.docker/postgres/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql

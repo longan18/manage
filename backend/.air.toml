@@ -1,0 +1,44 @@
+# Air configuration file for hot reloading Go applications
+# https://github.com/cosmtrek/air
+
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  # Binary file generated
+  bin = "./tmp/main"
+  # Command to build the application
+  cmd = "go build -o ./tmp/main ./cmd/api/main.go"
+  # Binary execution command
+  full_bin = "./tmp/main"
+  # Exclude directories from watching
+  exclude_dir = ["tmp", "vendor", ".git"]
+  # Exclude file suffixes from watching
+  exclude_file = []
+  # Files to watch for changes
+  include_ext = ["go", "env", "yaml", "yml", "json"]
+  # Watch test files
+  include_file = []
+  # Kill process before rebuilding
+  kill_delay = "0s"
+  # Send interrupt before killing process
+  send_interrupt = false
+  # Wait for building to finish
+  delay = 1000 # ms
+  # Stop watching after exiting
+  stop_on_error = true
+
+[log]
+  # Show log time
+  time = true
+
+[color]
+  # Colorize log output
+  main = "magenta"
+  watcher = "cyan"
+  build = "yellow"
+  runner = "green"
+
+[misc]
+  # Delete tmp directory on exit
+  clean_on_exit = true 
