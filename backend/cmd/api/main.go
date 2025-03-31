@@ -1,53 +1,30 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-	"github.com/gin-gonic/gin"
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/postgres"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
-	gormPostgres "gorm.io/driver/postgres"
-	"gorm.io/gorm"
+	"log"
+
+	"github.com/longan18/manage/backend/config"
+	"github.com/longan18/manage/backend/routes"
 )
 
 func main() {
-	r := gin.Default()
-    
-    r.GET("/ping", func(c *gin.Context) {
-        c.JSON(http.StatusOK, gin.H{
-        "message": "pong",
-        })
-    })
+	// Load environment variables
+	config.LoadEnv()
 
-    dsn := "host=postgres user=postgres password=postgres dbname=manage port=5432 sslmode=disable"
-    db, err := gorm.Open(gormPostgres.Open(dsn), &gorm.Config{})
-    if err != nil {
-        panic("Failed to connect to database: " + err.Error())
-    }
-    
-    // Lấy database instance từ gorm
-    sqlDB, err := db.DB()
-    if err != nil {
-        panic("Failed to get database: " + err.Error())
-    }
+	// Connect to the database
+	db, err := config.Connect()
+	if err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
+	}
 
-    driver, err := postgres.WithInstance(sqlDB, &postgres.Config{})
-    if err != nil {
-        panic("Failed to create migration driver: " + err.Error())
-    }
+	// Run migrations
+	if err := config.RunMigrations(db); err != nil {
+		log.Fatalf("Migration error: %v", err)
+	}
 
-    migrationsPath := "file://./migrations/postgres"
-    m, err := migrate.NewWithDatabaseInstance(migrationsPath, "postgres", driver)
-    if err != nil {
-        panic("Failed to initialize migrations: " + err.Error())
-    }
-
-    m.Up() 
-    if err != nil && err != migrate.ErrNoChange {
-        panic("Migration failed: " + err.Error())
-    }
-    fmt.Println("Migrations completed successfully!")
-
-    r.Run() 
+	// Set up and start the server
+	router := routes.NewRouter()
+	if err := routes.Start(router); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
 }
