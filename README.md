@@ -91,7 +91,6 @@ manage/
 ├── frontend/        - Next.js-based web application
 ├── backend/         - Go-based API service
 ├── .docker/         - Docker configuration files
-│   ├── postgres/    - PostgreSQL initialization scripts
 │   ├── frontend.Dockerfile
 │   └── backend.Dockerfile
 └── docker-compose.yml - Main Docker Compose configuration
