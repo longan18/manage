@@ -30,6 +30,4 @@ services:
     # In production, use named volumes for persistence
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./.docker/postgres/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
-      - ./.docker/postgres/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
     restart: always

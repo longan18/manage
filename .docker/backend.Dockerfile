@@ -64,6 +64,9 @@ RUN apk --no-cache add ca-certificates
 # Copy the binary from the build stage
 COPY --from=build /app/api .
 
+# Copy migrations folder for golang-migrate
+COPY backend/migrations/ ./migrations/
+
 # Create a non-root user and switch to it
 RUN adduser -D appuser
 USER appuser
