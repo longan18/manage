@@ -2,4 +2,4 @@
 DROP INDEX IF EXISTS idx_permissions_name;
 
 -- Drop permissions table
-DROP TABLE IF EXISTS permissions;
+DROP TABLE IF EXISTS manage.permissions;
