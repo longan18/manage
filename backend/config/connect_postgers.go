@@ -24,7 +24,7 @@ func Connect() (*gorm.DB, error) {
 		dbConfig["port"],
 		dbConfig["sslmode"],
 	)
-	
+
 	return dialets.PostgresDB(dsn)
 } 
 

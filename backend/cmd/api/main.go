@@ -23,7 +23,7 @@ func main() {
 	}
 
 	// Set up and start the server
-	router := routes.NewRouter()
+	router := routes.NewRouter(db)
 	if err := routes.Start(router); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
